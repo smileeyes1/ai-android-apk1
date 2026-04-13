@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المرافق الخبير للمعلم الفلسطيني</title>
+
+<meta name="theme-color" content="#2e7d32">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  direction: rtl;
+  background: #f4f6f7;
+  padding: 20px;
+}
+h1 {
+  color: #2e7d32;
+  text-align: center;
+}
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📘 المرافق الخبير للمعلم الفلسطيني</h1>
+
+<div class="card">
+<h3>درس: الطرح ضمن 10</h3>
+
+<b>الهدف:</b>
+تعرف مفهوم الطرح كأخذ من مجموعة.
+
+<b>التمهيد:</b>
+كان معي 7 أقلام، أعطيت صديقي 3. كم بقي؟
+
+<b>الشرح:</b>
+عدّ بالأصابع ثم أنزل عدد المأخوذ.
+
+<b>نشاط:</b>
+المعلم يذكر مسألة، الطلاب يجيبون شفهيًا.
+
+<b>تقويم:</b>
+5 − 2 = ؟
+
+<b>واجب:</b>
+اكتب مسألة طرح من بيتك.
+</div>
+
+<div class="card">
+<h3>ملاحظة للمعلم</h3>
+<textarea style="width:100%;height:80px"></textarea>
+<button onclick="saveNote()">حفظ الملاحظة</button>
+</div>
+
+<script>
+// حفظ الملاحظات محليًا
+function saveNote(){
+  alert("تم حفظ الملاحظة (محليًا على الجهاز)");
+}
+
+// =======================
+// PWA داخل نفس الملف
+// =======================
+
+// إنشاء manifest ديناميكي
+const manifest = {
+  name: "المرافق الخبير للمعلم الفلسطيني",
+  short_name: "المرافق الخبير",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#ffffff",
+  theme_color: "#2e7d32"
+};
+
+const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(blob);
+const link = document.createElement('link');
+link.rel = 'manifest';
+link.href = manifestURL;
+document.head.appendChild(link);
+
+// Service Worker من نفس الملف
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', event => {
+      event.waitUntil(
+        caches.open('teacher-cache').then(cache => {
+          return cache.addAll(['./']);
+        })
+      );
+    });
+    self.addEventListener('fetch', event => {
+      event.respondWith(
+        caches.match(event.request).then(response => {
+          return response || fetch(event.request);
+        })
+      );
+    });
+  `;
+
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  const swURL = URL.createObjectURL(swBlob);
+
+  navigator.serviceWorker.register(swURL);
+}
+</script>
+
+</body>
+</html>
