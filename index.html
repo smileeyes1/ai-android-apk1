@@ -3,123 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>المرافق الخبير للمعلم الفلسطيني</title>
-
-<meta name="theme-color" content="#2e7d32">
+<title>الخبير المرافق للمعلم الفلسطيني</title>
+<meta name="theme-color" content="#1b5e20">
 
 <style>
 body {
   font-family: Arial, sans-serif;
   direction: rtl;
-  background: #f4f6f7;
-  padding: 20px;
+  background: #f1f5f2;
+  margin: 0;
+  padding: 15px;
 }
 h1 {
-  color: #2e7d32;
   text-align: center;
+  color: #1b5e20;
 }
-.card {
-  background: white;
-  padding: 15px;
+.section {
+  background: #fff;
   border-radius: 12px;
+  padding: 15px;
   margin-bottom: 15px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+label {
+  font-weight: bold;
+}
+select, textarea, input, button {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
 }
 button {
-  width: 100%;
-  padding: 12px;
-  font-size: 18px;
-  background: #2e7d32;
+  background: #1b5e20;
   color: white;
   border: none;
   border-radius: 8px;
-  margin-top: 10px;
+}
+output {
+  white-space: pre-wrap;
+  font-size: 15px;
+  line-height: 1.6;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📘 المرافق الخبير للمعلم الفلسطيني</h1>
+<h1>📘 الخبير المرافق للمعلم الفلسطيني</h1>
 
-<div class="card">
-<h3>درس: الطرح ضمن 10</h3>
+<div class="section">
+<label>الصف:</label>
+<select id="grade">
+<option>الأول</option>
+<option>الثاني</option>
+</select>
 
-<b>الهدف:</b>
-تعرف مفهوم الطرح كأخذ من مجموعة.
+<label>المادة:</label>
+<select id="subject">
+<option>رياضيات</option>
+<option>لغة عربية</option>
+</select>
 
-<b>التمهيد:</b>
-كان معي 7 أقلام، أعطيت صديقي 3. كم بقي؟
+<label>عنوان الدرس:</label>
+<input id="lessonTitle" placeholder="مثال: الطرح ضمن 10">
 
-<b>الشرح:</b>
-عدّ بالأصابع ثم أنزل عدد المأخوذ.
+<label>نص من الكتاب (اختياري):</label>
+<textarea id="bookText" placeholder="ألصق نص الدرس من الكتاب هنا"></textarea>
 
-<b>نشاط:</b>
-المعلم يذكر مسألة، الطلاب يجيبون شفهيًا.
-
-<b>تقويم:</b>
-5 − 2 = ؟
-
-<b>واجب:</b>
-اكتب مسألة طرح من بيتك.
+<button onclick="generatePlan()">إنشاء تحضير وخطة</button>
 </div>
 
-<div class="card">
-<h3>ملاحظة للمعلم</h3>
-<textarea style="width:100%;height:80px"></textarea>
-<button onclick="saveNote()">حفظ الملاحظة</button>
+<div class="section">
+<h3>📋 التحضير المقترح</h3>
+<output id="plan"></output>
+</div>
+
+<div class="section">
+<h3>📝 ملاحظات المعلم</h3>
+<textarea id="notes"></textarea>
+<button onclick="saveNotes()">حفظ الملاحظات</button>
 </div>
 
 <script>
-// حفظ الملاحظات محليًا
-function saveNote(){
-  alert("تم حفظ الملاحظة (محليًا على الجهاز)");
+function generatePlan() {
+  const grade = document.getElementById("grade").value;
+  const subject = document.getElementById("subject").value;
+  const title = document.getElementById("lessonTitle").value;
+  const text = document.getElementById("bookText").value;
+
+  const plan = `
+الصف: ${grade}
+المادة: ${subject}
+الدرس: ${title}
+
+🎯 الهدف:
+أن يتعرف الطالب على مفهوم ${title} ويطبقه في حياته اليومية.
+
+🌱 التمهيد:
+موقف من واقع الطفل الفلسطيني (الصف، البيت، الشارع).
+
+📚 خطوات الشرح:
+1. مناقشة شفهية باستخدام أسئلة بسيطة.
+2. تمثيل بالمحسوسات (أصابع، أقلام، حجارة).
+3. مشاركة جماعية.
+
+🎲 نشاط صفّي:
+نشاط حركي لا يحتاج وسائل، مناسب لصف مكتظ.
+
+✅ التقويم:
+سؤال شفوي + مثال تطبيقي سريع.
+
+🏠 الواجب:
+مهمة خفيفة من واقع حياة الطالب.
+
+📖 ملاحظات من نص الكتاب:
+${text ? text.substring(0,300) + "..." : "لم يتم إدخال نص"}
+`;
+
+  document.getElementById("plan").textContent = plan;
 }
 
-// =======================
-// PWA داخل نفس الملف
-// =======================
+function saveNotes() {
+  localStorage.setItem("teacher_notes", document.getElementById("notes").value);
+  alert("✅ تم حفظ الملاحظات");
+}
 
-// إنشاء manifest ديناميكي
+document.getElementById("notes").value =
+  localStorage.getItem("teacher_notes") || "";
+
+// ===== PWA جزء داخلي =====
 const manifest = {
-  name: "المرافق الخبير للمعلم الفلسطيني",
-  short_name: "المرافق الخبير",
+  name: "الخبير المرافق للمعلم الفلسطيني",
+  short_name: "الخبير المرافق",
   start_url: ".",
   display: "standalone",
   background_color: "#ffffff",
-  theme_color: "#2e7d32"
+  theme_color: "#1b5e20"
 };
 
-const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const blob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
 const manifestURL = URL.createObjectURL(blob);
-const link = document.createElement('link');
-link.rel = 'manifest';
+const link = document.createElement("link");
+link.rel = "manifest";
 link.href = manifestURL;
 document.head.appendChild(link);
 
-// Service Worker من نفس الملف
-if ('serviceWorker' in navigator) {
+if ("serviceWorker" in navigator) {
   const swCode = `
-    self.addEventListener('install', event => {
-      event.waitUntil(
-        caches.open('teacher-cache').then(cache => {
-          return cache.addAll(['./']);
-        })
+    self.addEventListener("install", e => {
+      e.waitUntil(
+        caches.open("teacher-cache").then(c =>
+          c.addAll(["./"])
+        )
       );
     });
-    self.addEventListener('fetch', event => {
-      event.respondWith(
-        caches.match(event.request).then(response => {
-          return response || fetch(event.request);
-        })
+    self.addEventListener("fetch", e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request))
       );
     });
   `;
-
-  const swBlob = new Blob([swCode], {type: 'application/javascript'});
-  const swURL = URL.createObjectURL(swBlob);
-
-  navigator.serviceWorker.register(swURL);
+  const swBlob = new Blob([swCode], {type: "application/javascript"});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob));
 }
 </script>
 
