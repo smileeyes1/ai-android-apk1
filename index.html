@@ -19,7 +19,7 @@ h1 {
   color: #1b5e20;
 }
 .section {
-  background: #fff;
+  background: white;
   border-radius: 12px;
   padding: 15px;
   margin-bottom: 15px;
@@ -29,7 +29,7 @@ label {
 }
 select, textarea, input, button {
   width: 100%;
-  margin-top: 5px;
+  margin-top: 6px;
   margin-bottom: 10px;
   padding: 10px;
   font-size: 16px;
@@ -40,10 +40,12 @@ button {
   border: none;
   border-radius: 8px;
 }
-output {
+.output {
   white-space: pre-wrap;
-  font-size: 15px;
   line-height: 1.6;
+}
+small {
+  color: #555;
 }
 </style>
 </head>
@@ -55,84 +57,95 @@ output {
 <div class="section">
 <label>الصف:</label>
 <select id="grade">
-<option>الأول</option>
-<option>الثاني</option>
+  <option>الأول</option>
+  <option>الثاني</option>
 </select>
 
 <label>المادة:</label>
 <select id="subject">
-<option>رياضيات</option>
-<option>لغة عربية</option>
+  <option>رياضيات</option>
 </select>
 
 <label>عنوان الدرس:</label>
 <input id="lessonTitle" placeholder="مثال: الطرح ضمن 10">
 
-<label>نص من الكتاب (اختياري):</label>
-<textarea id="bookText" placeholder="ألصق نص الدرس من الكتاب هنا"></textarea>
+<label>📸 صورة الدرس (للتذكير فقط – لا تُقرأ تلقائيًا):</label>
+<input type="file" accept="image/*">
 
-<button onclick="generatePlan()">إنشاء تحضير وخطة</button>
+<small>
+تُستخدم الصورة لتأكيد الدرس بصريًا فقط.
+يتم بناء التحضير بناءً على المفهوم التربوي لا النص الحرفي.
+</small>
+
+<label>🧠 اختر مفهوم الدرس:</label>
+<select id="concept">
+  <option>أخذ من مجموعة (طرح)</option>
+  <option>ضم مجموعتين (جمع)</option>
+  <option>مقارنة عددين</option>
+  <option>ترتيب تصاعدي / تنازلي</option>
+  <option>عدد سابق / لاحق</option>
+  <option>قيمة منزلية</option>
+</select>
+
+<button onclick="generatePlan()">إنشاء تحضير ومحاكاة صفية</button>
 </div>
 
 <div class="section">
-<h3>📋 التحضير المقترح</h3>
-<output id="plan"></output>
+<h3>🧩 التحضير والمحاكاة المقترحة</h3>
+<div id="output" class="output"></div>
 </div>
 
 <div class="section">
 <h3>📝 ملاحظات المعلم</h3>
-<textarea id="notes"></textarea>
+<textarea id="notes" placeholder="اكتب ماذا حدث في الحصة..."></textarea>
 <button onclick="saveNotes()">حفظ الملاحظات</button>
 </div>
 
 <script>
 function generatePlan() {
-  const grade = document.getElementById("grade").value;
-  const subject = document.getElementById("subject").value;
-  const title = document.getElementById("lessonTitle").value;
-  const text = document.getElementById("bookText").value;
+  const grade = gradeEl.value;
+  const subject = subjectEl.value;
+  const title = lessonTitle.value;
+  const concept = conceptEl.value;
 
-  const plan = `
+  const text = `
 الصف: ${grade}
 المادة: ${subject}
 الدرس: ${title}
+المفهوم: ${concept}
 
-🎯 الهدف:
-أن يتعرف الطالب على مفهوم ${title} ويطبقه في حياته اليومية.
+🎯 الهدف السلوكي:
+أن يفهم الطالب مفهوم "${concept}" ويطبقه في مواقف حياتية بسيطة.
 
 🌱 التمهيد:
-موقف من واقع الطفل الفلسطيني (الصف، البيت، الشارع).
+موقف من واقع الطالب الفلسطيني (في البيت أو الصف).
 
-📚 خطوات الشرح:
-1. مناقشة شفهية باستخدام أسئلة بسيطة.
-2. تمثيل بالمحسوسات (أصابع، أقلام، حجارة).
-3. مشاركة جماعية.
+📘 خطوات الشرح:
+1. طرح سؤال شفهي مرتبط بحياة الطالب.
+2. تمثيل المفهوم بالمحسوسات (أصابع – أقلام).
+3. مشاركة جماعية سريعة.
 
 🎲 نشاط صفّي:
-نشاط حركي لا يحتاج وسائل، مناسب لصف مكتظ.
+نشاط حركي بسيط لا يحتاج وسائل، مناسب لصف مكتظ.
 
 ✅ التقويم:
-سؤال شفوي + مثال تطبيقي سريع.
+سؤال شفهي + تطبيق واحد أمام السبورة.
 
 🏠 الواجب:
-مهمة خفيفة من واقع حياة الطالب.
-
-📖 ملاحظات من نص الكتاب:
-${text ? text.substring(0,300) + "..." : "لم يتم إدخال نص"}
+مهمة خفيفة من البيت مرتبطة بالمفهوم.
 `;
 
-  document.getElementById("plan").textContent = plan;
+  output.textContent = text;
 }
 
 function saveNotes() {
-  localStorage.setItem("teacher_notes", document.getElementById("notes").value);
-  alert("✅ تم حفظ الملاحظات");
+  localStorage.setItem("teacher_notes", notes.value);
+  alert("✅ تم حفظ الملاحظات محليًا");
 }
 
-document.getElementById("notes").value =
-  localStorage.getItem("teacher_notes") || "";
+notes.value = localStorage.getItem("teacher_notes") || "";
 
-// ===== PWA جزء داخلي =====
+// PWA
 const manifest = {
   name: "الخبير المرافق للمعلم الفلسطيني",
   short_name: "الخبير المرافق",
@@ -142,8 +155,8 @@ const manifest = {
   theme_color: "#1b5e20"
 };
 
-const blob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
-const manifestURL = URL.createObjectURL(blob);
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type:"application/json"});
+const manifestURL = URL.createObjectURL(manifestBlob);
 const link = document.createElement("link");
 link.rel = "manifest";
 link.href = manifestURL;
@@ -151,22 +164,26 @@ document.head.appendChild(link);
 
 if ("serviceWorker" in navigator) {
   const swCode = `
-    self.addEventListener("install", e => {
-      e.waitUntil(
-        caches.open("teacher-cache").then(c =>
-          c.addAll(["./"])
-        )
-      );
-    });
-    self.addEventListener("fetch", e => {
-      e.respondWith(
-        caches.match(e.request).then(r => r || fetch(e.request))
-      );
-    });
-  `;
-  const swBlob = new Blob([swCode], {type: "application/javascript"});
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open("teacher-cache").then(c => c.addAll(["./"]))
+  );
+});
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
+  );
+});
+`;
+  const swBlob = new Blob([swCode], {type:"application/javascript"});
   navigator.serviceWorker.register(URL.createObjectURL(swBlob));
 }
+
+const gradeEl = document.getElementById("grade");
+const subjectEl = document.getElementById("subject");
+const lessonTitle = document.getElementById("lessonTitle");
+const output = document.getElementById("output");
+const notes = document.getElementById("notes");
 </script>
 
 </body>
